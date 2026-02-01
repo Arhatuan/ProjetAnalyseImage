@@ -19,4 +19,14 @@ There are also additional arguments :
 - `-r {regression_algorithm}` the regression algorithm to use (default : 1) (you can implement another algorithm and easily test it with this command)
 - `-p` to print details : for each file, the regression prediction compared to the ground truth, for the number of coins and the total monetary value
 
+# Program structure
+
+The file '*project.py*' gets the arguments from the command line, and send them to the class Manager.  
+The directory '*src/*' contains all the code.  
+The directory '*data/*' is only for automatic usage of the program (not having to specify the necessary files and directory on the command line).  
+
+<div align="center">
+  <img src="projet_analyse_image_diagramme_classes.drawio.png" alt="Class diagram of the project's code">
+</div>
+
 
