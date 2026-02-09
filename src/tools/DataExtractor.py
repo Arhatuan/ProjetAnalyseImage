@@ -21,7 +21,7 @@ class DataExtractor():
         list_imgs_to_evaluate = DataExtractor._get_list_of_images_to_evaluate(filePath_evaluatedImages)
         data_groundTruth = DataExtractor._get_ground_truth(filePath_groundTruth, list_imgs_to_evaluate)
         absolutePaths_images = DataExtractor._get_images_absolute_paths(directoryPath_imageCollection, list_imgs_to_evaluate)
-
+        
         return DataExtractor._create_image_data(data_groundTruth, absolutePaths_images)
 
 
@@ -38,12 +38,12 @@ class DataExtractor():
             list[str]: a list of image names for evaluation
         """
         try:
-            text = FileParser.file_reading(filePath_imageList)
+            imagesNames = FileParser.file_list_images_reading(filePath_imageList)
         except Exception as e:
             raise Exception(str(e) + "\n(this file is supposed to contain the list of images for regression and evaluation)")
 
-        imagesNames = text.split() # Each line has an image name
         imagesNames = list(set(imagesNames)) # To delete duplicates
+        imagesNames.sort()
 
         return imagesNames
 
@@ -62,12 +62,11 @@ class DataExtractor():
             data_groundTruth (dict[str, tuple[int, float]]): key = image name, value = tuple[nb coins, total monetary value]
         """
         try:
-            text = FileParser.file_reading(filePath_groundTruth)
+            #text = FileParser.file_reading(filePath_groundTruth)
+            data_groundTruth = FileParser.excel_file_reading_and_parsing_ground_truth(filePath_groundTruth)
         except Exception as e:
             raise Exception(str(e) + "\n(this file is supposed to contain the ground truth for the images)")
         
-        data_groundTruth = FileParser.parse_ground_truth(text)
-
         # We check that each image name exist in this dictionary
         for image_name in list_images:
             if (not image_name in data_groundTruth.keys()):

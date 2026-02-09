@@ -13,7 +13,7 @@ DEFAULT_DIRECTORY_IMG_COLLECTION_PATH = os.path.join(Path(__file__).parent, 'dat
 """Path to the default directory containing all the images to evaluate 
 (can contain other images, but they won't be considered)"""
 
-DEFAULT_FILE_GROUND_TRUTH_PATH = os.path.join(Path(__file__).parent, 'data', 'default_ground_truth.txt')
+DEFAULT_FILE_GROUND_TRUTH_PATH = os.path.join(Path(__file__).parent, 'data', 'default_ground_truth.xlsx')
 """Path to the file containing the ground truth for each image to evaluate
 (can contain ground truth for other images, but they won't be considered)"""
 
