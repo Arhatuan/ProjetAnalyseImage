@@ -35,16 +35,12 @@ class Manager():
         )
 
         # Regression process
-        regression_results = Manager._manage_regression(img_data, parameters.regression_algorithm)
-
-        # Print details
-        if parameters.print_regression_details:
-            Manager._print_details(regression_results)
+        regression_results = Manager._manage_regression(img_data, parameters.regression_algorithm, parameters.print_regression_details)
 
         # Evaluation
         Manager._manage_evaluation(regression_results, parameters.evaluation_types)
     
-    def _manage_regression(image_data: list[ImageData], regressionAlgo: str) -> list[ResultsToEvaluate]:
+    def _manage_regression(image_data: list[ImageData], regressionAlgo: str, printDetails: bool = False) -> list[ResultsToEvaluate]:
         """Apply a regression algorithm on each image, and return results that can be immediately evaluated
 
         Args:
@@ -55,6 +51,9 @@ class Manager():
             resultsForEvaluation (list[ResultsToEvaluate]): the results that can be immediately send for the evaluation
         """
         results = []
+
+        # Start of printing details
+        if printDetails: imageNamePadding = Manager.print_details_gradually_part1([data.name for data in image_data])
 
         for data in image_data:
             
@@ -78,6 +77,8 @@ class Manager():
                 totalValue_groundTruth = data.totalValue_groundTruth
             )
             results.append(img_result)
+
+            if printDetails: Manager.print_details_gradually_part2(img_result, imageNamePadding)
 
         return results
 
@@ -157,3 +158,54 @@ class Manager():
         
         print(constructedLines)
 
+    def print_details_gradually_part1(listNames: list[str]) -> int:
+        # 1) Get the maximum lengths of the parameters to print
+        len_name = 0
+        for name in listNames:
+            len_name = max(len_name, len(name))
+
+        len_name += 3 # additional padding
+        len_nbC_pred = max(len("100"), len("Prediction"))
+        len_nbC_GT = max(len("100"), len("Ground Truth"))
+        len_value_pred = max(len("10,00"), len("Prediction"))
+        len_value_GT = max(len("10,00"), len("Ground Truth"))
+        space_in_between = 7
+
+        # Line 1
+        constructedLines = " "*len_name 
+        constructedLines += ("{:^"+str(len_nbC_pred+len_nbC_GT+3)+"}").format("Number of coins")
+        constructedLines += " "*space_in_between
+        constructedLines += ("{:^"+str(len_value_pred+len_value_GT+3)+"}").format("Monetary value")
+        constructedLines += "\n"
+
+        # Line 2
+        constructedLines += " "*len_name
+        constructedLines += ("{:^"+str(len_nbC_pred+len_nbC_GT+3)+"}").format("Prediction / Ground Truth")
+        constructedLines += " "*space_in_between
+        constructedLines += ("{:^"+str(len_value_pred+len_value_GT+3)+"}").format("Prediction / Ground Truth")
+        constructedLines += "\n"
+
+        print(constructedLines)
+        return len_name
+
+    def print_details_gradually_part2(data: ResultsToEvaluate, fileNamePadding: int):
+        len_name = fileNamePadding
+        len_nbC_pred = max(len("100"), len("Prediction"))
+        len_nbC_GT = max(len("100"), len("Ground Truth"))
+        len_value_pred = max(len("10,00"), len("Prediction"))
+        len_value_GT = max(len("10,00"), len("Ground Truth"))
+        space_in_between = 7
+
+        constructedLine = ("{:<"+str(len_name)+"}").format(f"{data.image_name} :")
+
+        constructedLine += ("{:>"+str(len_nbC_pred)+"}").format(data.nbCoins_predicted)
+        constructedLine += " / "
+        constructedLine += ("{:<"+str(len_nbC_GT)+"}").format(data.nbCoins_groundTruth)
+
+        constructedLine += ("{:^"+str(space_in_between)+"}").format("|")
+
+        constructedLine += ("{:>"+str(len_value_pred)+"}").format(data.totalMonetaryValue_predicted)
+        constructedLine += " / "
+        constructedLine += str(data.totalMonetaryValue_groundTruth)
+
+        print(constructedLine)
