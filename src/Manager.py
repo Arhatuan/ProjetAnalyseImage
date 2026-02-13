@@ -1,5 +1,6 @@
 import types
 import cv2 as cv
+import time
 from .classes.Parameters import Parameters
 from .tools.DataExtractor import DataExtractor
 from .classes.ImageData import ImageData
@@ -54,20 +55,19 @@ class Manager():
 
         # Start of printing details
         if printDetails: imageNamePadding = Manager.print_details_gradually_part1([data.name for data in image_data])
+        totalTime = 0
 
         for data in image_data:
-            
-            img = cv.imread(data.image_path) 
-            if img is None:
-                raise Exception(f"The file '{data.name}' couldn't be read as an image.")
+
+            startingTime = time.time() # timer start
 
             match regressionAlgo:
                 case regressionAlgorithm.REGRESSION_ALGORITHM_1:
-                    (nbCoins_predict, totalValue_predict) = RegressionAlgorithm1.get_nbCoins_and_totalMonetaryValue(img)
+                    (nbCoins_predict, totalValue_predict) = RegressionAlgorithm1.get_nbCoins_and_totalMonetaryValue(data.image_path)
                 case regressionAlgorithm.REGRESSION_ALGORITHM_2:
                     raise Exception("Regression algorithm n°2 not implemented")
                 case _:
-                    (nbCoins_predict, totalValue_predict) = RegressionAlgorithm1.get_nbCoins_and_totalMonetaryValue(img)
+                    (nbCoins_predict, totalValue_predict) = RegressionAlgorithm1.get_nbCoins_and_totalMonetaryValue(data.image_path)
 
             img_result = ResultsToEvaluate(
                 name = data.name,
@@ -78,7 +78,11 @@ class Manager():
             )
             results.append(img_result)
 
-            if printDetails: Manager.print_details_gradually_part2(img_result, imageNamePadding)
+            timeDuration = time.time() - startingTime # timer end
+            totalTime += timeDuration
+            if printDetails: Manager.print_details_gradually_part2(img_result, imageNamePadding, timeDuration)
+
+        if printDetails: print("\t\t\t\t\t\t\t\t\t(total : {:.3f}s)".format(totalTime))
 
         return results
 
@@ -188,7 +192,7 @@ class Manager():
         print(constructedLines)
         return len_name
 
-    def print_details_gradually_part2(data: ResultsToEvaluate, fileNamePadding: int):
+    def print_details_gradually_part2(data: ResultsToEvaluate, fileNamePadding: int, timeDuration: float):
         len_name = fileNamePadding
         len_nbC_pred = max(len("100"), len("Prediction"))
         len_nbC_GT = max(len("100"), len("Ground Truth"))
@@ -206,6 +210,8 @@ class Manager():
 
         constructedLine += ("{:>"+str(len_value_pred)+"}").format(data.totalMonetaryValue_predicted)
         constructedLine += " / "
-        constructedLine += str(data.totalMonetaryValue_groundTruth)
+        constructedLine += ("{:<"+str(len_value_GT)+"}").format(data.totalMonetaryValue_groundTruth)
+
+        constructedLine += "\t({:.3f}s)".format(timeDuration)
 
         print(constructedLine)
