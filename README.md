@@ -1,3 +1,8 @@
+# Python libraries needed
+
+- '***numpy***' and '***opencv-python***' for the structures and algorithms
+- '***pandas***' and ***openpyxl*** for reading the Excel file (containing the ground truth)
+
 # How to use the program
 
 Use the command line to execute the program :  
@@ -16,7 +21,7 @@ These files and directory are automatically taken from the directory '*data/*' a
 
 There are also additional arguments :
 - `-e [{evaluation_types} ...]` to choose the evaluations to apply (several evaluations possible ; by default : MSE) (chose between MAE and MSE for now)
-- `-r {regression_algorithm}` the regression algorithm to use (default : 1) (you can implement another algorithm and easily test it with this command)
+- `-r {regression_algorithm}` to choose the regression algorithm to use (default : 1) (you can implement another algorithm and easily test it with this command)
 - `-p` to print details : for each file, the regression prediction compared to the ground truth, for the number of coins and the total monetary value
 
 # Program structure
