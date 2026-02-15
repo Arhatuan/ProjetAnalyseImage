@@ -93,19 +93,40 @@ class Manager():
             results (list[ResultsToEvaluate]): the results to evaluate
             evaluations_list (list[str]): the list of evaluations to do, in that order
         """
-
+        
         for evaluation in evaluations_list:
             match evaluation:
                 case evaluations.MAE:
-                    (mae_nbCoins, mae_value) = Evaluation.MAE(results)
-                    print("MAE number of coins = {:.3f}".format(mae_nbCoins))
-                    print("MAE monetary value = {:.3f}".format(mae_value))
-                    print()
+                    (linesMAE_nbCoins, linesMAE_monetaryValue) = Evaluation.get_strings_MAE(results)
+                    # (mae_nbCoins, mae_value) = Evaluation.MAE(results)
+                    # print("MAE number of coins = {:.3f}".format(mae_nbCoins))
+                    # print("MAE monetary value = {:.3f}".format(mae_value))
+                    # print()
                 case evaluations.MSE:
-                    (mse_nbCoins, mse_value) = Evaluation.MSE(results)
-                    print("MSE number of coins = {:.3f}".format(mse_nbCoins))
-                    print("MSE monetary value = {:.3f}".format(mse_value))
-                    print()
+                    (linesMSE_nbCoins, linesMSE_monetaryValue) = Evaluation.get_strings_MSE(results)
+                    # (mse_nbCoins, mse_value) = Evaluation.MSE(results)
+                    # print("MSE number of coins = {:.3f}".format(mse_nbCoins))
+                    # print("MSE monetary value = {:.3f}".format(mse_value))
+                    # print()
+
+        # For nb coins evaluation
+        linesProportionsNbCoins = Evaluation.get_string_proportions_nb_coins_predictions(results)
+        print("Number of coins")
+        print("\t"+ str.replace(linesProportionsNbCoins, "\t", "\t\t"))
+
+        for evaluation in evaluations_list:
+            match evaluation:
+                case evaluations.MAE: print("\t" + str.replace(linesMAE_nbCoins, "\t", "\t\t"))
+                case evaluations.MSE: print("\t" + str.replace(linesMSE_nbCoins, "\t", "\t\t"))
+
+        # For monetary value evaluation
+        print("\nMonetary value")
+        for evaluation in evaluations_list:
+            match evaluation:
+                case evaluations.MAE: print("\t" + str.replace(linesMAE_monetaryValue, "\t", "\t\t"))
+                case evaluations.MSE: print("\t" + str.replace(linesMSE_monetaryValue, "\t", "\t\t"))
+
+        
 
     def _print_details(results: list[ResultsToEvaluate]):
         """Print the predictions and ground truths
