@@ -125,3 +125,60 @@ def _show_image_with_circles(img: ndarray, circles: ndarray):
     cv.imshow("detected circles", img)
     cv.waitKey(0)
 
+def get_circles2(img : np.ndarray):
+    """Get the circles around the coins in the image, as they are automatically detected
+        Done with binarization to improve detection
+
+        Args:
+            img (ndarray): the image with coins
+
+        Returns:
+            circles,_nb_circles (tuple[ndarray, int]): the N circles are contained in a (1,N,3) matrix 
+                    (each line contains 3 data for a circle : center X and Y coordinates, and radius)
+        """
+    #Resize the image to  get consistant values for min and max radiuses during detection
+    resized = _resize_lowest_side_of_image(img, SHORTEST_SIDE_LENGTH)
+
+    #Preprocessing grayed, blur and binarization 
+    gray = cv.cvtColor(resized, cv.COLOR_BGR2GRAY)
+    blur = cv.GaussianBlur(gray, (7,7), 0) 
+
+    binary = cv.adaptiveThreshold(
+    blur,
+    255,
+    cv.ADAPTIVE_THRESH_GAUSSIAN_C,
+    cv.THRESH_BINARY_INV,
+    51,
+    5
+)   
+    canny_t = _get_canny_high_threshold(blur)
+    num_labels = cv.connectedComponentsWithStats(binary)[0]
+
+    #Adjust the param2 value according to the number of connex components in the binary image: 
+    # big nb of components means noisy background higher treshold for circle detection
+    # In the very low complexity background like in gp4/1 we have in the range of 50-60 components 
+    # for high cxity like grp5/2 we have in the range of 600 comp 
+
+    def _get_param2(nb_comp):
+        return 45 + (15/650)*nb_comp
+
+    circles = cv.HoughCircles(
+    binary,
+    cv.HOUGH_GRADIENT,
+    dp=1.2,
+    minDist=80, # Minimum distance between two centers, take this to be roughly equal to the lowest possible radius
+    param1=canny_t, # Not very useful considering we work with a binarized version of the image 
+    param2=_get_param2(num_labels),  # this 
+    minRadius=10,
+    maxRadius=70
+)
+    circles = _resize_circles_back_to_original_size(circles, gray.shape[1], img.shape[1])
+    nb_circles = circles.shape[1] if circles is not None else 0
+    return circles, nb_circles
+
+
+
+
+
+
+
