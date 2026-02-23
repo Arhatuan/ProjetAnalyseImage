@@ -1,7 +1,6 @@
 import numpy as np
 from numpy import ndarray
 import cv2 as cv
-import matplotlib.pyplot as plt
 import skimage
 
 from ..classes.CoinData import CoinData, CoinType, CoinValue, real_coins_diameters, possible_values_by_type
@@ -259,7 +258,10 @@ def update_coins_types(img: ndarray, list_coinData: list[CoinData], showImageAnd
     # 2.1) Automatically choose a threshold value to separate cents coin of type 'copper' and 'golden'
     hist1, bin1 = np.histogram(hue_values, bins=180, range=(0,179))
     hist1 = strip_histogram_beyond_quartiles(hist1, 0.25, 0.75)
-    threshold_hue = skimage.filters.threshold_otsu(hist=hist1)
+    if np.any(hist1):
+        threshold_hue = skimage.filters.threshold_otsu(hist=hist1)
+    else:
+        threshold_hue = 15 # default, but it's here just to prevent histogram of only zeros
 
     if showImageAndDetails:
         print("\t== threshold : {:.1f} ==".format(threshold_hue))
@@ -306,6 +308,13 @@ def update_coins_values_voting_method(list_coinData: list[CoinData], img: ndarra
         img (ndarray, optional): the image, only if showing details. Defaults to None.
         showImageAndDetails (bool, optional): option to show the coin's image, with the value decided. Defaults to False.
     """
+    if len(list_coinData) < 2:
+        # no comparison possible, so we give the coin a default value
+        #   copper coin : 1c    //   golden coin : 10c
+        for coinData in list_coinData:
+            coinData.value = CoinValue.CENT_1 if coinData.coinType == CoinType.COPPER else CoinValue.CENT_10
+        return
+    
     # Global method (even for euros)
     for i in range(len(list_coinData)):
         coinData = list_coinData[i]
@@ -348,8 +357,12 @@ def update_coins_values(list_coinData: list[CoinData], img: ndarray = None, show
         img (ndarray, optional): the image, only if showing details. Defaults to None.
         showImageAndDetails (bool, optional): option to show the coin's image, with the value decided. Defaults to False.
     """
-    names_copper_cents = [v for v in CoinValue if v.value < 0.1]
-    names_golden_cents = [v for v in CoinValue if 0.1 <= v.value < 1] 
+    if len(list_coinData) < 2:
+        # no comparison possible, so we give the coin a default value
+        #   copper coin : 1c    //   golden coin : 10c
+        for coinData in list_coinData:
+            coinData.value = CoinValue.CENT_1 if coinData.coinType == CoinType.COPPER else CoinValue.CENT_10
+        return
 
     list_eurosDatas = [dataCoin for dataCoin in list_coinData if dataCoin.coinType == CoinType.EURO]
     list_centsDatas = [dataCoin for dataCoin in list_coinData if dataCoin.coinType != CoinType.EURO]
@@ -366,7 +379,7 @@ def update_coins_values(list_coinData: list[CoinData], img: ndarray = None, show
                 ratio_basic = centsCoin.radius / euroCoin.radius
                 
                 # get the list of possible 'cents' options, depending on its color
-                possible_cents_names = names_copper_cents if centsCoin.coinType == CoinType.COPPER else names_golden_cents
+                possible_cents_names = possible_values_by_type[centsCoin.coinType]
                 
                 # compare to every possible 'cents' options
                 for coinValue in possible_cents_names:

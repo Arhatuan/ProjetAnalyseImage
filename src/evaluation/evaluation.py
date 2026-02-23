@@ -14,6 +14,8 @@ class Evaluation():
         Returns:
             MAE_nbCoins,MAE_value (tuple[float, float]): MAE for number of coins, MAE for monetary value 
         """
+        if len(results) == 0:
+            return (0,0)
         sum_nbCoins = 0
         sum_value = 0
         for i in range(len(results)):
@@ -36,6 +38,8 @@ class Evaluation():
         Returns:
             MSE_nbCoins,MSE_value (tuple[float, float]): MSE for number of coins, MSE for monetary value 
         """
+        if len(results) == 0:
+            return (0,0)
         sum_nbCoins = 0
         sum_value = 0
         for i in range(len(results)):
