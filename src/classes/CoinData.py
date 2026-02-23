@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from enum import Enum
 
 class CoinType(Enum):
@@ -49,4 +50,3 @@ class CoinData():
     def __str__(self):
         return ("• Coin : ({:.1f}, {:.1f}) -> radius : {:.1f} \t|| type : {}, \t value : {}"
                 .format(self.xCenter, self.yCenter, self.radius, self.coinType, self.value))
-    
