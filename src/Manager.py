@@ -120,7 +120,10 @@ class Manager():
                 case evaluations.MSE: print("\t" + str.replace(linesMSE_nbCoins, "\t", "\t\t"))
 
         # For monetary value evaluation
+        linesProportionsMonetaryValue = Evaluation.get_string_proportions_monetary_value(results)
         print("\nMonetary value")
+        print("\t"+ str.replace(linesProportionsMonetaryValue, "\t", "\t\t"))
+        
         for evaluation in evaluations_list:
             match evaluation:
                 case evaluations.MAE: print("\t" + str.replace(linesMAE_monetaryValue, "\t", "\t\t"))

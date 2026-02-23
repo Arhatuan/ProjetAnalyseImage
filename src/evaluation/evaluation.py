@@ -95,6 +95,36 @@ class Evaluation():
         lines += (" | {:^"+str(len("Difference > 2"))+".2%}").format(nbNotGoodPredictions / len(results))
 
         return lines
+    
+    def get_number_perfect_monetary_value_prediction(results: list[ResultsToEvaluate]):
+        nbPerfect_monetaryValue = 0
+        nbPerfect_nbCoins = 0
+        nbPerfectValue_withPerfectNbCoins = 0
+
+        for result in results:
+            differenceNbCoins = abs(result.nbCoins_predicted - result.nbCoins_groundTruth)
+            differenceMonetaryValue = abs(result.totalMonetaryValue_predicted - result.totalMonetaryValue_groundTruth)
+
+            if differenceNbCoins == 0:
+                nbPerfect_nbCoins += 1
+            if differenceMonetaryValue == 0:
+                nbPerfect_monetaryValue += 1
+            if differenceNbCoins == 0 and differenceMonetaryValue == 0:
+                nbPerfectValue_withPerfectNbCoins += 1
+        
+        return (nbPerfect_nbCoins, nbPerfect_monetaryValue, nbPerfectValue_withPerfectNbCoins)
+
+    def get_string_proportions_monetary_value(results: list[ResultsToEvaluate]) -> str:
+        (nbPerfect_nbCoins, nbPerfect_monetaryValue, nbPerfectValue_withPerfectNbCoins) = Evaluation.get_number_perfect_monetary_value_prediction(results)
+
+        lines = "• Results proportions\n"
+        lines += "\tPerfect value | Perfect value knowing perfect nb coins\n"
+
+        lines += ("\t{:^"+str(len("Perfect value"))+".2%}").format(nbPerfect_monetaryValue / len(results))
+        lines += (" | {:^"+str(len("Perfect value knowing perfect nb coins"))+".2%}").format(nbPerfectValue_withPerfectNbCoins / nbPerfect_nbCoins)
+
+        return lines
+        pass
 
     def get_strings_MAE(results: list[ResultsToEvaluate]) -> tuple[str, str]:
         """Strings containing the MAE evaluation concerning the results to evaluate
