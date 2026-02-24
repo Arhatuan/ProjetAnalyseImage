@@ -1,7 +1,65 @@
 # Python libraries needed
 
 - '***numpy***' and '***opencv-python***' for the structures and algorithms
-- '***pandas***' and ***openpyxl*** for reading the Excel file (containing the ground truth)
+- '***pandas***' and '***openpyxl***' for reading the Excel file (containing the ground truth)
+- '***scikit-image***'
+
+# Results
+
+We evaluated the algorithm with notably MAE and MSE criteria. We also wanted to see how many cases had perfect predictions (or close enough).
+We evaluated the number of coins and the monetary value, because they are available as ground truth.
+
+For the **evaluation dataset** :
+
+- *Number of coins*
+
+| Perfect prediction | Difference of 1 or 2 | Difference > 2 |
+|--------------------|----------------------|----------------|
+|       64.38%       |        15.07%        |     20.55%     |
+
+
+|     | Global | Only not perfect predictions |
+|-----|--------|------------------------------|
+| MAE | 2.67   |            7.50              |
+| MSE | 61.22  |            171.88            |
+
+- *Monetary value*
+
+| Perfect value | Perfect value knowing perfect number of coins |
+|---------------|-----------------------------------------------|
+| 6.85%         |                 10.64%                        |
+
+|     | Global | Only perfect number of coins predictions |
+|-----|--------|------------------------------------------|
+| MAE | 3.16   |               2.48                       |
+| MSE | 26.61  |              15.75                       |
+
+For the **test dataset** :
+
+- *Number of coins*
+
+| Perfect prediction | Difference of 1 or 2 | Difference > 2 |
+|--------------------|----------------------|----------------|
+|       56.25%       |        18.75%        |     25.00%     |
+
+
+|     | Global | Only not perfect predictions |
+|-----|--------|------------------------------|
+| MAE | 3.06   |            7.00              |
+| MSE | 63.19  |            144.43            |
+
+- *Monetary value*
+
+| Perfect value | Perfect value knowing perfect number of coins |
+|---------------|-----------------------------------------------|
+| 15.62%        |                 27.78%                        |
+
+|     | Global | Only perfect number of coins predictions |
+|-----|--------|------------------------------------------|
+| MAE | 2.69   |               1.89                       |
+| MSE | 17.66  |              12.39                       |
+
+
 
 # How to use the program
 
